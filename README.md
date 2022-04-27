@@ -32,7 +32,7 @@ confluent.create_topic("myTopic", "myCluster")
 ```python
 confluent.login()
 ```
-Logs in to Confluent Cloud account enabling usage of ccloud.
+Logs in to Confluent Cloud account enabling usage of confluent.
 
 ```python
 confluent.logut()
