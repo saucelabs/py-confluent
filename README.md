@@ -135,5 +135,5 @@ We would love to have outside contributors chiming in supporting us finishing th
 [commit]: https://github.com/saucelabs/py-ccloud/commit/HEAD
 [release]: https://github.com/saucelabs/py-ccloud/releases/latest
 
-[commit badge]: https://img.shields.io/github/last-commit/saucelabs/py-ccloud.svg
-[release badge]: https://img.shields.io/github/release/saucelabs/py-ccloud.svg
+[commit badge]: https://img.shields.io/github/last-commit/saucelabs/py-confluent.svg
+[release badge]: https://img.shields.io/github/release/saucelabs/py-confluent.svg
