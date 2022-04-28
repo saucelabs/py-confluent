@@ -132,8 +132,8 @@ Deletes operation's ACL for a service account to a consumer group.
 
 We would love to have outside contributors chiming in supporting us finishing this. Please have a look at our [contribution guidelines](https://github.com/saucelabs/py-ccloud/blob/master/CONTRUBUTING.md).
 
-[commit]: https://github.com/saucelabs/py-ccloud/commit/HEAD
-[release]: https://github.com/saucelabs/py-ccloud/releases/latest
+[commit]: https://github.com/saucelabs/py-confluent/commit/HEAD
+[release]: https://github.com/saucelabs/py-confluent/releases/latest
 
 [commit badge]: https://img.shields.io/github/last-commit/saucelabs/py-confluent.svg
 [release badge]: https://img.shields.io/github/release/saucelabs/py-confluent.svg

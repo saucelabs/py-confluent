@@ -4,8 +4,15 @@ import os
 from executor import execute, ExternalCommandFailed
 from typing import Dict, Optional, Tuple
 
+TITLE_ROWS_INDEX = 1
+REQUIRED_ROWS_LENGTH = 2
 ENV_LOGIN_EMAIL = "CONFLUENT_CLOUD_EMAIL"
 ENV_LOGIN_PASSWORD = "CONFLUENT_CLOUD_PASSWORD"
+
+
+###########
+# API
+###########
 
 
 def login() -> None:
@@ -86,6 +93,45 @@ def delete_service_account(name: str) -> None:
         pass
 
 
+def create_topic_acl(service_account: str, topic: str, operation: str, prefix: bool = False) -> None:
+    _acl(service_account, topic, operation, "topic", "create", prefix=prefix)
+
+
+def delete_topic_acl(service_account: str, topic: str, operation: str, prefix: bool = False) -> None:
+    _acl(service_account, topic, operation, "topic", "delete", prefix=prefix)
+
+
+def create_consumer_group_acl(service_account: str, consumer_group: str, operation: str, prefix: bool = False) -> None:
+    _acl(service_account, consumer_group, operation, "consumer-group", "create", prefix=prefix)
+
+
+def delete_consumer_group_acl(service_account: str, consumer_group: str, operation: str, prefix: bool = False) -> None:
+    _acl(service_account, consumer_group, operation, "consumer-group", "delete", prefix=prefix)
+
+
+def list_api_keys() -> Dict:
+    return _list("api-key")
+
+
+def create_api_key(cluster: str, service_account: str) -> Dict:
+    cluster_id = _get_cluster_id_by_name(cluster)
+    service_account_id = _get_service_account_id_by_name(service_account)
+    cmd = f"confluent api-key create --resource {cluster_id} --service-account {service_account_id} --output json"
+    res = execute(cmd, capture=True)
+    return json.loads(res)
+
+
+def delete_api_key(api_key: str) -> None:
+    try:
+        execute(f"confluent api-key delete {api_key}")
+    except ExternalCommandFailed:
+        pass
+
+###########
+# HELPERS
+###########
+
+
 def _get_id_by_name(name, list_fn):
     resources = list_fn()
     for resource in resources:
@@ -111,3 +157,15 @@ def _list(resource):
     if not res:
         return None
     return json.loads(res)
+
+
+def _acl(service_account: str, resource_name: str, operation: str, resource: str, action: str, prefix: bool = False):
+    service_account_id = _get_service_account_id_by_name(service_account)
+    cmd = f"confluent kafka acl {action} "
+    cmd += f"--allow --service-account {service_account_id} --operation {operation} --{resource} {resource_name}"
+    if prefix:
+        cmd += " --prefix"
+    try:
+        execute(cmd)
+    except ExternalCommandFailed:
+        pass
