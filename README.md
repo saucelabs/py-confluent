@@ -9,7 +9,7 @@ Simple Python library wrapping the Confluent Cloud CLI v2
 ### Installation
 
 ```bash
-pip install py-confluent
+pip install py-confluent-cli
 ```
 ### Usage example
 

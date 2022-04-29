@@ -2,7 +2,7 @@ import setuptools
 
 
 setuptools.setup(
-    name="py-confluent",
+    name="py-confluent-cli",
     version="0.9.1",
     author="Pawel Dudzinski",
     author_email="pawel.dudzinski@saucelabs.com",
