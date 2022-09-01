@@ -44,19 +44,19 @@ def list_clusters(environment: Optional[str] = None) -> Tuple:
 
 def use_cluster(name: str) -> Optional[str]:
     cluster_id = _get_cluster_id_by_name(name)
-    execute(f"confluent kafka cluster use {cluster_id}")
+    execute(f"confluent kafka cluster use '{cluster_id}'")
     return cluster_id
 
 
 def list_topics(cluster: str) -> Dict:
     cluster_id = _get_cluster_id_by_name(cluster)
-    res = execute(f"confluent kafka topic list --cluster {cluster_id} --output json", capture=True)
+    res = execute(f"confluent kafka topic list --cluster '{cluster_id}' --output json", capture=True)
     return json.loads(res)
 
 
 def create_topic(name: str, cluster: str, number_of_partitions: int = 3, config: Optional[Dict] = None) -> None:
     cluster_id = _get_cluster_id_by_name(cluster)
-    cmd = f"confluent kafka topic create {name} --cluster {cluster_id} --partitions {number_of_partitions}"
+    cmd = f"confluent kafka topic create '{name}' --cluster '{cluster_id}' --partitions {number_of_partitions}"
     if config is not None and isinstance(config, type({})):
         cmd += " --config="
         cmd += ",".join([f"{k}={v}" for k, v in config.items()])
@@ -69,7 +69,7 @@ def create_topic(name: str, cluster: str, number_of_partitions: int = 3, config:
 def delete_topic(name: str, cluster: str) -> None:
     cluster_id = _get_cluster_id_by_name(cluster)
     try:
-        execute(f"confluent kafka topic delete {name} --cluster {cluster_id}")
+        execute(f"confluent kafka topic delete '{name}' --cluster '{cluster_id}'")
     except ExternalCommandFailed:
         pass
 
@@ -80,7 +80,7 @@ def list_service_accounts() -> Dict:
 
 def create_service_account(name: str, description: str) -> None:
     try:
-        execute(f"confluent iam service-account create {name} --description \"{description}\"", capture=True)
+        execute(f"confluent iam service-account create '{name}' --description \"{description}\"", capture=True)
     except ExternalCommandFailed:
         pass
 
@@ -88,7 +88,7 @@ def create_service_account(name: str, description: str) -> None:
 def delete_service_account(name: str) -> None:
     service_account_id = _get_service_account_id_by_name(name)
     try:
-        execute(f"confluent iam service-account delete {service_account_id}")
+        execute(f"confluent iam service-account delete '{service_account_id}'")
     except ExternalCommandFailed:
         pass
 
@@ -116,14 +116,14 @@ def list_api_keys() -> Dict:
 def create_api_key(cluster: str, service_account: str) -> Dict:
     cluster_id = _get_cluster_id_by_name(cluster)
     service_account_id = _get_service_account_id_by_name(service_account)
-    cmd = f"confluent api-key create --resource {cluster_id} --service-account {service_account_id} --output json"
+    cmd = f"confluent api-key create --resource '{cluster_id}' --service-account '{service_account_id}' --output json"
     res = execute(cmd, capture=True)
     return json.loads(res)
 
 
 def delete_api_key(api_key: str) -> None:
     try:
-        execute(f"confluent api-key delete {api_key}")
+        execute(f"confluent api-key delete '{api_key}'")
     except ExternalCommandFailed:
         pass
 
@@ -161,8 +161,8 @@ def _list(resource):
 
 def _acl(service_account: str, resource_name: str, operation: str, resource: str, action: str, prefix: bool = False):
     service_account_id = _get_service_account_id_by_name(service_account)
-    cmd = f"confluent kafka acl {action} "
-    cmd += f"--allow --service-account {service_account_id} --operation {operation} --{resource} {resource_name}"
+    cmd = f"confluent kafka acl '{action}' "
+    cmd += f"--allow --service-account '{service_account_id}' --operation '{operation}' --{resource} '{resource_name}'"
     if prefix:
         cmd += " --prefix"
     try:
