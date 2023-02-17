@@ -61,9 +61,15 @@ def create_topic(name: str, cluster: str, number_of_partitions: int = 3, config:
         cmd += " --config="
         cmd += ",".join([f"{k}={v}" for k, v in config.items()])
     try:
-        execute(cmd, capture=True)
-    except ExternalCommandFailed:
-        pass
+        execute(cmd, capture=True, capture_stderr=True)
+    except ExternalCommandFailed as exc:
+        if _already_exists(exc):
+            return
+        raise
+
+
+def _already_exists(exc: ExternalCommandFailed) -> bool:
+    return "already exists" in str(exc.args).lower()
 
 
 def delete_topic(name: str, cluster: str) -> None:
@@ -71,7 +77,7 @@ def delete_topic(name: str, cluster: str) -> None:
     try:
         execute(f"confluent kafka topic delete '{name}' --cluster '{cluster_id}'")
     except ExternalCommandFailed:
-        pass
+        raise
 
 
 def list_service_accounts() -> Dict:
@@ -82,7 +88,7 @@ def create_service_account(name: str, description: str) -> None:
     try:
         execute(f"confluent iam service-account create '{name}' --description \"{description}\"", capture=True)
     except ExternalCommandFailed:
-        pass
+        raise
 
 
 def delete_service_account(name: str) -> None:
@@ -162,10 +168,10 @@ def _list(resource):
 def _acl(service_account: str, resource_name: str, operation: str, resource: str, action: str, prefix: bool = False):
     service_account_id = _get_service_account_id_by_name(service_account)
     cmd = f"confluent kafka acl '{action}' "
-    cmd += f"--allow --service-account '{service_account_id}' --operation '{operation}' --{resource} '{resource_name}'"
+    cmd += f"--allow --service-account '{service_account_id}' --operations '{operation}' --{resource} '{resource_name}'"
     if prefix:
         cmd += " --prefix"
     try:
         execute(cmd)
     except ExternalCommandFailed:
-        pass
+        raise
