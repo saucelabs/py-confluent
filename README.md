@@ -4,7 +4,7 @@
 [![Latest Release][release badge]][release]
 [![Last Commit][commit badge]][commit]
 
-Simple Python library wrapping the Confluent Cloud CLI v2
+Simple Python library wrapping the Confluent Cloud CLI v3
 
 ### Installation
 
@@ -130,7 +130,7 @@ Deletes operation's ACL for a service account to a consumer group.
 
 ### Contributing
 
-We would love to have outside contributors chiming in supporting us finishing this. Please have a look at our [contribution guidelines](https://github.com/saucelabs/py-confluent/blob/master/CONTRIBUTING.md).
+We would love to have outside contributors chiming in supporting us finishing this. Please have a look at our [contribution guidelines](https://github.com/saucelabs/py-confluent/blob/main/CONTRIBUTING.md).
 
 [commit]: https://github.com/saucelabs/py-confluent/commit/HEAD
 [release]: https://github.com/saucelabs/py-confluent/releases/latest
