@@ -3,7 +3,7 @@ import setuptools
 
 setuptools.setup(
     name="py-confluent-cli",
-    version="0.9.2",
+    version="0.9.3",
     author="Pawel Dudzinski",
     author_email="pawel.dudzinski@saucelabs.com",
     description="Simple Python library wrapping the Confluent Cloud CLI v2",
