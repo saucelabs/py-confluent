@@ -75,7 +75,7 @@ def _already_exists(exc: ExternalCommandFailed) -> bool:
 def delete_topic(name: str, cluster: str) -> None:
     cluster_id = _get_cluster_id_by_name(cluster)
     try:
-        execute(f"confluent kafka topic delete '{name}' --cluster '{cluster_id}'")
+        execute(f"confluent kafka topic delete '{name}' --cluster '{cluster_id}' --force")
     except ExternalCommandFailed:
         raise
 
@@ -94,7 +94,7 @@ def create_service_account(name: str, description: str) -> None:
 def delete_service_account(name: str) -> None:
     service_account_id = _get_service_account_id_by_name(name)
     try:
-        execute(f"confluent iam service-account delete '{service_account_id}'")
+        execute(f"confluent iam service-account delete '{service_account_id}' --force")
     except ExternalCommandFailed:
         pass
 
@@ -104,7 +104,7 @@ def create_topic_acl(service_account: str, topic: str, operation: str, prefix: b
 
 
 def delete_topic_acl(service_account: str, topic: str, operation: str, prefix: bool = False) -> None:
-    _acl(service_account, topic, operation, "topic", "delete", prefix=prefix)
+    _acl(service_account, topic, operation, "topic", "delete", prefix=prefix, force=True)
 
 
 def create_consumer_group_acl(service_account: str, consumer_group: str, operation: str, prefix: bool = False) -> None:
@@ -112,7 +112,7 @@ def create_consumer_group_acl(service_account: str, consumer_group: str, operati
 
 
 def delete_consumer_group_acl(service_account: str, consumer_group: str, operation: str, prefix: bool = False) -> None:
-    _acl(service_account, consumer_group, operation, "consumer-group", "delete", prefix=prefix)
+    _acl(service_account, consumer_group, operation, "consumer-group", "delete", prefix=prefix, force=True)
 
 
 def list_api_keys() -> Dict:
@@ -129,7 +129,7 @@ def create_api_key(cluster: str, service_account: str) -> Dict:
 
 def delete_api_key(api_key: str) -> None:
     try:
-        execute(f"confluent api-key delete '{api_key}'")
+        execute(f"confluent api-key delete '{api_key}' --force")
     except ExternalCommandFailed:
         pass
 
@@ -165,12 +165,14 @@ def _list(resource):
     return json.loads(res)
 
 
-def _acl(service_account: str, resource_name: str, operation: str, resource: str, action: str, prefix: bool = False):
+def _acl(service_account: str, resource_name: str, operation: str, resource: str, action: str, prefix: bool = False, force: bool = False):
     service_account_id = _get_service_account_id_by_name(service_account)
     cmd = f"confluent kafka acl '{action}' "
     cmd += f"--allow --service-account '{service_account_id}' --operations '{operation}' --{resource} '{resource_name}'"
     if prefix:
         cmd += " --prefix"
+    if force:
+        cmd += " --force"
     try:
         execute(cmd)
     except ExternalCommandFailed:
