@@ -1,5 +1,6 @@
 import json
 import os
+import tempfile
 
 from executor import execute, ExternalCommandFailed
 from typing import Dict, Optional, Tuple
@@ -132,6 +133,31 @@ def delete_api_key(api_key: str) -> None:
         execute(f"confluent api-key delete '{api_key}'")
     except ExternalCommandFailed:
         pass
+
+
+def create_schema(topic: str, schema: dict, suffix: str = "value") -> None:
+    with tempfile.NamedTemporaryFile("w") as temp_file:
+        json.dump(schema, temp_file)
+        temp_file.flush()
+        cmd = f"confluent schema-registry schema create --type json --schema {temp_file.name} --subject {topic}-{suffix}"
+        execute(cmd)
+
+
+def delete_schema(topic: str, suffix: str = "value") -> None:
+    cmd = f"confluent schema-registry schema delete --version all --subject {topic}-{suffix} --force"
+    try:
+        execute(cmd)
+    except ExternalCommandFailed:
+        pass
+    else:
+        execute(cmd + " --permanent")
+
+
+def list_schemas(topic: str, suffix: str = "value") -> Dict:
+    cmd = f"confluent schema-registry schema list --subject-prefix {topic}-{suffix} --output json"
+    res = execute(cmd, capture=True)
+    return json.loads(res)
+
 
 ###########
 # HELPERS

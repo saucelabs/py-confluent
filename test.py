@@ -31,6 +31,12 @@ print(f"Found {len(result)} API keys")
 result = confluent.create_api_key("staging-us-headless", "confluent-cli-test-sa")
 print("Got a new key: ", result)
 
+schema = {"properties": {"value": {"title": "Value", "type": "string"}}, "required": ["value"], "title": "TestTopic", "type": "object"}
+confluent.create_schema("confluent-cli-test-topic", schema)
+result = confluent.list_schemas("confluent-cli-test-topic")
+print(f"Found {len(result)} schemas")
+
+confluent.delete_schema("confluent-cli-test-topic")
 confluent.delete_api_key(result["key"])
 confluent.delete_consumer_group_acl("confluent-cli-test-sa", "confluent-cli-test-cg", "READ")
 confluent.delete_topic_acl("confluent-cli-test-sa", "confluent-cli-test-topic", "READ", prefix=True)
